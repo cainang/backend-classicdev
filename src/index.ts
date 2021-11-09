@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
@@ -10,6 +12,6 @@ app.use(express.json());
 
 app.use(routes);
 
-app.listen(3333, () => {
-  console.log('Server started on port 3333');
+app.listen(process.env.PORT || 3000, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
