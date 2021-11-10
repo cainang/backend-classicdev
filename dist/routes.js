@@ -76,7 +76,7 @@ routes.post('/create/quest', function (req, res) { return __awaiter(void 0, void
     });
 }); });
 routes.get('/quests', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var dificudade, response, data;
+    var dificudade, response, shuffle, Quest_Shuffle, data;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -84,9 +84,19 @@ routes.get('/quests', function (req, res) { return __awaiter(void 0, void 0, voi
                 return [4 /*yield*/, prisma.quest.findMany({ take: 10, where: { difficulty: dificudade } })];
             case 1:
                 response = _a.sent();
+                shuffle = function (array) {
+                    for (var i = array.length - 1; i > 0; i--) {
+                        var j = Math.floor(Math.random() * i);
+                        var temp = array[i];
+                        array[i] = array[j];
+                        array[j] = temp;
+                    }
+                    return array;
+                };
+                Quest_Shuffle = shuffle(response);
                 data = {
                     response_code: 0,
-                    results: response
+                    results: Quest_Shuffle
                 };
                 return [2 /*return*/, res.json(data)];
         }
