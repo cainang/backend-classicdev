@@ -28,7 +28,9 @@ routes.post('/create/quest', async (req, res) => {
 
 routes.get('/quests', async (req, res) => {
   const dificudade = req.query.dificudade;
-  const response = await prisma.quest.findMany({ take: 10, where: { difficulty: dificudade } });
+  const productsCount = await prisma.quest.count();
+  const skip = Math.floor(Math.random() * productsCount);
+  const response = await prisma.quest.findMany({take: 10, skip: skip, where: {difficulty: dificudade}});
 
   const shuffle = (array: Object[]) => {
 

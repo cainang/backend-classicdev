@@ -76,13 +76,17 @@ routes.post('/create/quest', function (req, res) { return __awaiter(void 0, void
     });
 }); });
 routes.get('/quests', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var dificudade, response, shuffle, Quest_Shuffle, data;
+    var dificudade, productsCount, skip, response, shuffle, Quest_Shuffle, data;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 dificudade = req.query.dificudade;
-                return [4 /*yield*/, prisma.quest.findMany({ take: 10, where: { difficulty: dificudade } })];
+                return [4 /*yield*/, prisma.quest.count()];
             case 1:
+                productsCount = _a.sent();
+                skip = Math.floor(Math.random() * productsCount);
+                return [4 /*yield*/, prisma.quest.findMany({ take: 10, skip: skip, where: { difficulty: dificudade } })];
+            case 2:
                 response = _a.sent();
                 shuffle = function (array) {
                     for (var i = array.length - 1; i > 0; i--) {
