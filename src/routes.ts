@@ -30,7 +30,19 @@ routes.get('/quests', async (req, res) => {
   const dificudade = req.query.dificudade;
   const productsCount = await prisma.quest.count();
   const skip = Math.floor(Math.random() * productsCount);
-  const response = await prisma.quest.findMany({take: 10, skip: skip, where: {difficulty: dificudade}});
+  const response = await prisma.quest.findMany({ where: {difficulty: dificudade}});
+
+  var questions:Object[] = [];
+
+  for (let index = 0; index < 10;) {
+    const question = response[skip + index];
+    var filter = questions.filter((item => {return item.id == question.id}))
+    if(filter.length == 0) {
+      console.log('passou');
+      questions.push(question);
+      index++;
+    }
+  }
 
   const shuffle = (array: Object[]) => {
 
@@ -44,7 +56,7 @@ routes.get('/quests', async (req, res) => {
 
     return array;
   }
-  const Quest_Shuffle = shuffle(response);
+  const Quest_Shuffle = shuffle(questions);
 
   const data = {
     response_code: 0,
