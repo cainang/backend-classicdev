@@ -76,7 +76,7 @@ routes.post('/create/quest', function (req, res) { return __awaiter(void 0, void
     });
 }); });
 routes.get('/quests', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var dificudade, productsCount, skip, response, shuffle, Quest_Shuffle, data;
+    var dificudade, productsCount, skip, response, questions, _loop_1, filter, out_index_1, index, shuffle, Quest_Shuffle, data;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -85,9 +85,24 @@ routes.get('/quests', function (req, res) { return __awaiter(void 0, void 0, voi
             case 1:
                 productsCount = _a.sent();
                 skip = Math.floor(Math.random() * productsCount);
-                return [4 /*yield*/, prisma.quest.findMany({ take: 10, skip: skip, where: { difficulty: dificudade } })];
+                return [4 /*yield*/, prisma.quest.findMany({ where: { difficulty: dificudade } })];
             case 2:
                 response = _a.sent();
+                questions = [];
+                _loop_1 = function (index) {
+                    var question = response[skip + index];
+                    filter = questions.filter((function (item) { return item.id == question.id; }));
+                    if (filter.length == 0) {
+                        console.log('passou');
+                        questions.push(question);
+                        index++;
+                    }
+                    out_index_1 = index;
+                };
+                for (index = 0; index < 10;) {
+                    _loop_1(index);
+                    index = out_index_1;
+                }
                 shuffle = function (array) {
                     for (var i = array.length - 1; i > 0; i--) {
                         var j = Math.floor(Math.random() * i);
@@ -97,7 +112,7 @@ routes.get('/quests', function (req, res) { return __awaiter(void 0, void 0, voi
                     }
                     return array;
                 };
-                Quest_Shuffle = shuffle(response);
+                Quest_Shuffle = shuffle(questions);
                 data = {
                     response_code: 0,
                     results: Quest_Shuffle
