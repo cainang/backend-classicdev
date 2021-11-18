@@ -56,7 +56,7 @@ routes.get('/quests', async (req, res) => {
     } else {
       const response = await prisma.quest.findMany({ skip: skip, take: 1, where: {difficulty: dificudade}});
       questions.map(quest => {
-        if (quest.question == response[0].question) {
+        if (quest?.question == response[0].question) {
           stateGet++;
         }
       })
