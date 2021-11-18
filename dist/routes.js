@@ -41,6 +41,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 exports.__esModule = true;
 var express_1 = __importDefault(require("express"));
 var client_1 = require("@prisma/client");
+var shuffle = function (array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * i);
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+};
 var prisma = new client_1.PrismaClient();
 var routes = express_1["default"].Router();
 routes.post('/create/quest', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -76,7 +85,7 @@ routes.post('/create/quest', function (req, res) { return __awaiter(void 0, void
     });
 }); });
 routes.get('/quests', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var dificudade, productsCount, skip, response, questions, _loop_1, filter, out_index_1, index, shuffle, Quest_Shuffle, data;
+    var dificudade, productsCount, stateGet, questions, _loop_1, out_index_1, index, Quest_Shuffle, data;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -84,35 +93,52 @@ routes.get('/quests', function (req, res) { return __awaiter(void 0, void 0, voi
                 return [4 /*yield*/, prisma.quest.count({ where: { difficulty: dificudade } })];
             case 1:
                 productsCount = _a.sent();
-                skip = Math.floor(Math.random() * productsCount);
-                return [4 /*yield*/, prisma.quest.findMany({ where: { difficulty: dificudade } })];
-            case 2:
-                response = _a.sent();
+                stateGet = 0;
                 questions = [];
                 _loop_1 = function (index) {
-                    var question = response[skip + index];
-                    filter = questions.filter((function (item) {
-                        return item.id == question.id;
-                    }));
-                    if (filter.length == 0 && skip >= 0) {
-                        questions.push(question);
-                        index++;
-                    }
-                    out_index_1 = index;
+                    var skip, response, response_1;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                skip = Math.floor(Math.random() * productsCount);
+                                stateGet = 0;
+                                if (!(questions.length == 0)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, prisma.quest.findMany({ skip: skip, take: 1, where: { difficulty: dificudade } })];
+                            case 1:
+                                response = _b.sent();
+                                questions.push(response[0]);
+                                index++;
+                                return [3 /*break*/, 4];
+                            case 2: return [4 /*yield*/, prisma.quest.findMany({ skip: skip, take: 1, where: { difficulty: dificudade } })];
+                            case 3:
+                                response_1 = _b.sent();
+                                questions.map(function (quest) {
+                                    if (quest.question == response_1[0].question) {
+                                        stateGet++;
+                                    }
+                                });
+                                if (stateGet == 0) {
+                                    questions.push(response_1[0]);
+                                    index++;
+                                }
+                                _b.label = 4;
+                            case 4:
+                                out_index_1 = index;
+                                return [2 /*return*/];
+                        }
+                    });
                 };
-                for (index = 0; index < 10;) {
-                    _loop_1(index);
-                    index = out_index_1;
-                }
-                shuffle = function (array) {
-                    for (var i = array.length - 1; i > 0; i--) {
-                        var j = Math.floor(Math.random() * i);
-                        var temp = array[i];
-                        array[i] = array[j];
-                        array[j] = temp;
-                    }
-                    return array;
-                };
+                index = 0;
+                _a.label = 2;
+            case 2:
+                if (!(index < 10)) return [3 /*break*/, 5];
+                return [5 /*yield**/, _loop_1(index)];
+            case 3:
+                _a.sent();
+                index = out_index_1;
+                _a.label = 4;
+            case 4: return [3 /*break*/, 2];
+            case 5:
                 Quest_Shuffle = shuffle(questions);
                 data = {
                     response_code: 0,
