@@ -93,7 +93,7 @@ routes.get('/quests', function (req, res) { return __awaiter(void 0, void 0, voi
                     var question = response[skip + index];
                     filter = questions.filter((function (item) {
                         if (question.id !== undefined) {
-                            return item.id == question.id
+                            return item.id == question.id;
                         }
                     }));
                     if (filter.length == 0 && skip >= 0) {
