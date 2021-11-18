@@ -28,7 +28,8 @@ routes.post('/create/quest', async (req, res) => {
 
 routes.get('/quests', async (req, res) => {
   const dificudade = req.query.dificudade;
-  const productsCount = await prisma.quest.count();
+  const productsCount = await prisma.quest.count({where: {difficulty: dificudade}});
+  
   const skip = Math.floor(Math.random() * productsCount);
   const response = await prisma.quest.findMany({ where: {difficulty: dificudade}});
 
@@ -36,9 +37,11 @@ routes.get('/quests', async (req, res) => {
 
   for (let index = 0; index < 10;) {
     const question = response[skip + index];
-    var filter = questions.filter((item => {return item.id == question.id}))
-    if(filter.length == 0) {
-      console.log('passou');
+    
+    var filter = questions.filter((item => {
+      return item.id == question?.id
+    }))
+    if(filter.length == 0 && skip >= 0) {
       questions.push(question);
       index++;
     }

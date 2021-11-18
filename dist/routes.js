@@ -81,7 +81,7 @@ routes.get('/quests', function (req, res) { return __awaiter(void 0, void 0, voi
         switch (_a.label) {
             case 0:
                 dificudade = req.query.dificudade;
-                return [4 /*yield*/, prisma.quest.count()];
+                return [4 /*yield*/, prisma.quest.count({ where: { difficulty: dificudade } })];
             case 1:
                 productsCount = _a.sent();
                 skip = Math.floor(Math.random() * productsCount);
@@ -91,9 +91,10 @@ routes.get('/quests', function (req, res) { return __awaiter(void 0, void 0, voi
                 questions = [];
                 _loop_1 = function (index) {
                     var question = response[skip + index];
-                    filter = questions.filter((function (item) { return item.id == question.id; }));
-                    if (filter.length == 0) {
-                        console.log('passou');
+                    filter = questions.filter((function (item) {
+                        return item.id == (question === null || question === void 0 ? void 0 : question.id);
+                    }));
+                    if (filter.length == 0 && skip >= 0) {
                         questions.push(question);
                         index++;
                     }
