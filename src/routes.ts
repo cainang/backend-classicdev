@@ -39,7 +39,9 @@ routes.get('/quests', async (req, res) => {
     const question = response[skip + index];
     
     var filter = questions.filter((item => {
-      return item.id == question?.id
+      if (question.id !== undefined) {
+        return item.id == question.id
+      }
     }))
     if(filter.length == 0 && skip >= 0) {
       questions.push(question);
