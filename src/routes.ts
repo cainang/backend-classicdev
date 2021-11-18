@@ -11,6 +11,16 @@ type Question = {
   type: String;
 }
 
+const shuffle = (array: Object[]) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * i)
+    const temp = array[i]
+    array[i] = array[j]
+    array[j] = temp
+  }
+  return array;
+}
+
 const prisma = new PrismaClient()
 
 const routes = express.Router();
@@ -40,49 +50,38 @@ routes.get('/quests', async (req, res) => {
   const dificudade = req.query.dificudade;
   const productsCount = await prisma.quest.count({where: {difficulty: dificudade}});
   
-  const skip = Math.floor(Math.random() * productsCount);
-  const response = await prisma.quest.findMany({ where: {difficulty: dificudade}});
+  let stateGet = 0;
 
   var questions:Question[] = [];
 
   for (let index = 0; index < 10;) {
-    const question = response[skip + index];
+    const skip = Math.floor(Math.random() * productsCount);
+    stateGet = 0;
     
-    if (questions.length !== 0) {
-      var filter = questions.filter(((item: Question) => {
-        if (questions.length !== undefined) {
-          return item.question == question.question;
+    if (questions.length == 0) {
+      const response = await prisma.quest.findMany({ skip: skip, take: 1, where: {difficulty: dificudade}});
+      questions.push(response[0]);
+      index++;
+    } else {
+      const response = await prisma.quest.findMany({ skip: skip, take: 1, where: {difficulty: dificudade}});
+      questions.map(quest => {
+        if (quest.question == response[0].question) {
+          stateGet++;
         }
-      }))
-      if(filter.length == 0 && skip >= 0) {
-        questions.push(question);
+      })
+      if (stateGet == 0) {
+        questions.push(response[0]);
         index++;
       }
-    } else {
-      questions.push(question);
-      index++;
     }
   }
 
-  const shuffle = (array: Object[]) => {
-
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * i)
-      const temp = array[i]
-      array[i] = array[j]
-      array[j] = temp
-    }
-
-
-    return array;
-  }
   const Quest_Shuffle = shuffle(questions);
 
   const data = {
     response_code: 0,
     results: Quest_Shuffle
   }
-
 
   return res.json(data);
 })
