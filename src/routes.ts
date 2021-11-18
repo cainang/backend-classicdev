@@ -1,6 +1,16 @@
 import express from "express";
 import { PrismaClient } from '@prisma/client';
 
+type Question = {
+  id: String;
+  category: String;
+  correct_answer: String;
+  difficulty: String;
+  incorrect_answers: String[];
+  question: String;
+  type: String;
+}
+
 const prisma = new PrismaClient()
 
 const routes = express.Router();
@@ -33,7 +43,7 @@ routes.get('/quests', async (req, res) => {
   const skip = Math.floor(Math.random() * productsCount);
   const response = await prisma.quest.findMany({ where: {difficulty: dificudade}});
 
-  var questions:Object[] = [];
+  var questions:Question[] = [];
 
   for (let index = 0; index < 10;) {
     const question = response[skip + index];
